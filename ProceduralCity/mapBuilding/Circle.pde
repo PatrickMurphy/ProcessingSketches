@@ -2,16 +2,21 @@ class Circle implements Shape {
   int x, y, z;
   int wid, len;
   color fill, stroke;
-  float cirlceHeight;
+  float circleHeight;
   PImage texture;
+  float sides, angle;
+
   Circle(int x, int y, int z, int r) {
     this(x, y, z, r, r, color(43), color(43), null);
+  }
+  Circle(int x, int y, int z, int wid, int len) {
+    this(x, y, z, wid, len, color(43), color(43), null);
   }
   Circle(int x, int y, int z, int wid, int len, PImage text) {
     this(x, y, z, wid, len, color(43), color(43), text);
   }
-  Circle(int x, int y, int z, int wid, int len) {
-    this(x, y, z, wid, len, color(43), color(43), null);
+  Circle(int x, int y, int z, int wid, int len, color fill) {
+    this(x, y, z, wid, len, fill, color(43), null);
   }
   Circle(int x, int y, int z, int wid, int len, color fill, color stroke, PImage texture) {
     // generate random shapes
@@ -23,40 +28,37 @@ class Circle implements Shape {
     this.fill = fill;
     this.stroke = stroke;
     this.texture = texture;
+    this.sides = 10;
+    this.angle = 360 / this.sides;
+  }
+  void display2D() {
+    fill(fill);
+    //stroke(stroke);
+    ellipse(map(x, 0, GRID_WIDTH-CELL_SCALE, 0, width), map(y, 0, GRID_HEIGHT-CELL_SCALE, 0, height), width*(this.wid/((float)GRID_WIDTH-CELL_SCALE)), height*(this.len/((float)GRID_HEIGHT-CELL_SCALE)));
   }
   void display() {
-    fill(fill);
-    stroke(stroke);
-    ellipse(x, y, wid, len);
-  }
-  void display3d() {
-    fill(fill);
-    stroke(stroke);
+    fill(55);
     noStroke();
-    float sides = 30;
-    float h = this.getHeight();
-    float r = wid;
-
-    float angle = 360 / sides;
-    float halfHeight = h;
     // draw top shape
     beginShape();
     for (int i = 0; i < sides; i++) {
-      float x = cos( radians( i * angle ) ) * r;
-      float y = sin( radians( i * angle ) ) * r;
-      vertex( this.x+x, this.y+y, this.z+halfHeight );
+      float x = cos( radians( i * angle ) ) * wid;
+      float y = sin( radians( i * angle ) ) * wid;
+      vertex( this.x+x, this.y+y, this.z+this.circleHeight);
     }
     endShape(CLOSE);
-
+    fill(fill);
     // draw body
     beginShape(TRIANGLE_STRIP);
-    texture(texture);
+    if (texture != null) {
+      texture(texture);
+    }
     for (int i = 0; i < sides + 1; i++) {
-      float tc = (i/(float)(2*PI))*3;
-      float x = cos( radians( i * angle ) ) * r;
-      float y = sin( radians( i * angle ) ) * r;
-      vertex( this.x+x, this.y+y, this.z+halfHeight, tc, 0);
-      vertex( this.x+x, this.y+y, this.z, tc, 3);
+      float tc = (i/(float)(2*PI));
+      float x = cos( radians( i * angle ) ) * wid;
+      float y = sin( radians( i * angle ) ) * wid;
+      vertex( this.x+x, this.y+y, this.z+this.circleHeight, tc, 0);
+      vertex( this.x+x, this.y+y, this.z, tc, 1);
     }
     endShape(CLOSE);
   }
@@ -82,9 +84,9 @@ class Circle implements Shape {
   }
 
   float getHeight() {
-    return this.cirlceHeight;
+    return this.circleHeight;
   }
   void setHeight(float h) {
-    this.cirlceHeight = h;
+    this.circleHeight = h;
   }
 }

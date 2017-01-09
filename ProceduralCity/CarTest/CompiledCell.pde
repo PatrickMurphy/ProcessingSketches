@@ -10,7 +10,8 @@ class CompiledCell implements Comparable<CompiledCell> {
   int x, y;
   PImage texture;
   boolean[] cityNeighbors;
-  ArrayList<TileObject> tileObjects;
+  PathEdge[] road_edges;
+  // ArrayList<TileObject> tileObjects;
 
   int id; // 0:water, 1:beach, 2:lowlands, 3:hills, 4:foothills,5:mountainstart, 6:mountainmid, 7:mountainpeak
   String[] types = new String[]{"Water", "Beach", "Low Lands", "Hills", "Foothils", "Mountain Start", "Mountain Mid", "Mountain Peak"};
@@ -26,10 +27,11 @@ class CompiledCell implements Comparable<CompiledCell> {
     this.cellPopulation = cPop;
 
     this.cityNeighbors = new boolean[4];
-    tileObjects = new ArrayList<TileObject>();
+    //tileObjects = new ArrayList<TileObject>();
 
     this.getTerrain();
-    texture = terrain_textures[this.id].getTexture();
+    // texture = terrain_textures[this.id].getTexture();
+    this.addRoadEdges();
   }
 
   void drawCell() {
@@ -48,10 +50,10 @@ class CompiledCell implements Comparable<CompiledCell> {
 
   void findNeighbors() {
 
-    CompiledCell north = cMap.getCell(x, y-1);
-    CompiledCell south = cMap.getCell(x, y+1);
-    CompiledCell east = cMap.getCell(x+1, y);
-    CompiledCell west = cMap.getCell(x-1, y);
+    CompiledCell north =null;// = cMap.getCell(x, y-1);
+    CompiledCell south =null;// = cMap.getCell(x, y+1);
+    CompiledCell east  =null;//= cMap.getCell(x+1, y);
+    CompiledCell west  =null;//= cMap.getCell(x-1, y);
 
     boolean[] ret_values = new boolean[]{false, false, false, false};
 
@@ -71,23 +73,55 @@ class CompiledCell implements Comparable<CompiledCell> {
     this.cityNeighbors = ret_values;
   }
 
-  void drawCellDetail() {
-    drawObjects();
-  }
+  //void drawCellDetail() {
+  //  drawObjects();
+  //}
 
-  void drawObjects() {
-    // draw trees and buildings
-    for (int i = 0; i < this.tileObjects.size(); i++) {
-      this.tileObjects.get(i).update();
-      this.tileObjects.get(i).display();
-    }
-  }
+  //void drawObjects() {
+  //  // draw trees and buildings
+  //  for (int i = 0; i < this.tileObjects.size(); i++) {
+  //    this.tileObjects.get(i).update();
+  //    this.tileObjects.get(i).display();
+  //  }
+  //}
 
   void drawCell2D() {
     int xwid = width/GRID_COLUMNS+1;
     int ywid = height/GRID_ROWS+1;
     fill(this.cellColor);
     rect(x*xwid, y*ywid, x+xwid, y+ywid);
+  }
+
+  void display2D() {
+    float centerOfRoad = (ROAD_WIDTH*0.8)/2;
+    image(testTexture, x*CELL_SCALE, y*CELL_SCALE);
+    fill(255);
+    text(x+","+y + " " + ceil(this.distanceTo(car.target_cell))+ " " + (this.distanceTo(car.target_cell)), x*CELL_SCALE+(CELL_SCALE/5), y*CELL_SCALE+(CELL_SCALE/4));
+    fill(255, 0, 0);
+    if (x == car.position_cell.x && y == car.position_cell.y) {
+      text("P", x*CELL_SCALE+(CELL_SCALE/2), y*CELL_SCALE+(CELL_SCALE/2));
+    }
+    if (car.target_cell != null && x == car.target_cell.x && y == car.target_cell.y) {
+      fill(0, 0, 255);
+      text("T", x*CELL_SCALE+(CELL_SCALE/2), y*CELL_SCALE+(CELL_SCALE/2));
+      ellipse(car.target_cell.v1.x+centerOfRoad+car.target_offset.x, car.target_cell.v1.y+car.target_offset.y, 5, 5);
+    }
+    stroke(#00E8FF);
+    road_edges[0].display2D();
+    road_edges[1].display2D();
+    road_edges[2].display2D();
+    road_edges[3].display2D();
+    // add curves
+    // when it gets to that point calculate the turn degree vector that will be needed add that until rotated
+  }
+
+  void addRoadEdges() {
+    float centerOfRoad = (ROAD_WIDTH*0.8)/2;
+    road_edges = new PathEdge[4];
+    road_edges[Direction.WEST.getValue()] = new PathEdge(new PathPoint(v2.x+centerOfRoad, v2.y, 0.0), new PathPoint(v1.x+centerOfRoad, v1.y, 0.0), Direction.NORTH);
+    road_edges[Direction.NORTH.getValue()] = new PathEdge(new PathPoint(v1.x, v1.y+centerOfRoad, 0.0), new PathPoint(v3.x, v3.y+centerOfRoad, 0.0), Direction.EAST);
+    road_edges[Direction.EAST.getValue()] = new PathEdge(new PathPoint(v3.x-centerOfRoad, v3.y, 0.0), new PathPoint(v4.x-centerOfRoad, v4.y, 0.0), Direction.SOUTH);
+    road_edges[Direction.SOUTH.getValue()] = new PathEdge(new PathPoint(v4.x, v4.y-centerOfRoad, 0.0), new PathPoint(v2.x, v2.y-centerOfRoad, 0.0), Direction.WEST);
   }
 
   int compareTo(CompiledCell c) {
@@ -101,7 +135,8 @@ class CompiledCell implements Comparable<CompiledCell> {
   }
 
   float distanceTo(CompiledCell c) {
-    return sqrt(sq(c.x-this.x)+sq(c.y-this.y));
+   // return sqrt(sq(c.x-this.x)+sq(c.y-this.y));
+   return (abs(c.x-this.x)+abs(c.y-this.y));
   }
 
   boolean contains(PVector pos) {
@@ -129,10 +164,10 @@ class CompiledCell implements Comparable<CompiledCell> {
     return cityTile;
   }
 
-  void addBuilding(RandomBuilding b) {
-    this.setHasBuilding();
-    tileObjects.add((TileObject)b);
-  }
+  //void addBuilding(RandomBuilding b) {
+  //  this.setHasBuilding();
+  //  tileObjects.add((TileObject)b);
+  //}
   void setHasBuilding() {
     this.setHasBuilding(true);
   }
@@ -145,10 +180,10 @@ class CompiledCell implements Comparable<CompiledCell> {
     return this.hasBuilding;
   }
 
-  void addTree(Tree t) {
-    this.setForest();
-    tileObjects.add((TileObject)t);
-  }
+  //void addTree(Tree t) {
+  //  this.setForest();
+  //  tileObjects.add((TileObject)t);
+  //}
   void setForest() {
     this.setForest(true);
   }
