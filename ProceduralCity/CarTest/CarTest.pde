@@ -56,8 +56,8 @@ void startLoading() {
 
 void generateNewMap() {
   cMap = new CompiledMap(OVERALL_SCALE, GRID_COLUMNS, GRID_ROWS); // random terrain and buildings 
-  car = new Car(cMap.getCell(4, 4), null, Direction.NORTH);
-  car.setTarget(GRID_ROWS/2, 2);
+  car = new Car(cMap.getCell(7, 4), null, Direction.NORTH);
+  car.setTarget(3, 5, Direction.getEnum((int)random(0, 400)%4), random(0, 1));
 }
 
 void mousePressed() {
@@ -84,7 +84,7 @@ void mousePressed() {
     break;
   }
   car = new Car(cMap.getCell((int)random(GRID_ROWS-1), (int)random(GRID_ROWS-1)), null, newDir, random(1));
-  car.setTarget((int)random(GRID_ROWS-1), (int)random(GRID_ROWS-1));
+  car.setTarget((int)random(GRID_ROWS-1), (int)random(GRID_ROWS-1), Direction.getEnum((int)random(0, 400)%4), random(0, 1));
 }
 
 

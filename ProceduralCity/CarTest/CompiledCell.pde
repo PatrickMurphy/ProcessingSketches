@@ -96,7 +96,7 @@ class CompiledCell implements Comparable<CompiledCell> {
     float centerOfRoad = (ROAD_WIDTH*0.8)/2;
     image(testTexture, x*CELL_SCALE, y*CELL_SCALE);
     fill(255);
-    text(x+","+y + " " + ceil(this.distanceTo(car.target_cell))+ " " + (this.distanceTo(car.target_cell)), x*CELL_SCALE+(CELL_SCALE/5), y*CELL_SCALE+(CELL_SCALE/4));
+    text(x+","+y + "  D:"+ (this.distanceTo(car.target_cell)), x*CELL_SCALE+(CELL_SCALE/5), y*CELL_SCALE+(CELL_SCALE/4));
     fill(255, 0, 0);
     if (x == car.position_cell.x && y == car.position_cell.y) {
       text("P", x*CELL_SCALE+(CELL_SCALE/2), y*CELL_SCALE+(CELL_SCALE/2));
@@ -116,7 +116,7 @@ class CompiledCell implements Comparable<CompiledCell> {
   }
 
   void addRoadEdges() {
-    float centerOfRoad = (ROAD_WIDTH*0.8)/2;
+    int centerOfRoad = (int)(ROAD_WIDTH*0.8)/2;
     road_edges = new PathEdge[4];
     road_edges[Direction.WEST.getValue()] = new PathEdge(new PathPoint(v2.x+centerOfRoad, v2.y, 0.0), new PathPoint(v1.x+centerOfRoad, v1.y, 0.0), Direction.NORTH);
     road_edges[Direction.NORTH.getValue()] = new PathEdge(new PathPoint(v1.x, v1.y+centerOfRoad, 0.0), new PathPoint(v3.x, v3.y+centerOfRoad, 0.0), Direction.EAST);

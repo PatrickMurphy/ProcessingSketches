@@ -1,5 +1,9 @@
 class PathPoint extends PVector {
   
+  PathPoint(PVector v){
+    this(v.x,v.y,v.z);
+  }
+  
   PathPoint(float x, float y, float z){
     super(x,y,z);
   }
